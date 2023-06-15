@@ -12,11 +12,10 @@ class AlbumsService {
   async addAlbum({ name, year }) {
     const id = `album-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
-    const updateAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1,$2,$3,$4,$5) RETURNING id',
-      values: [id, name, year, createdAt, updateAt],
+      text: 'INSERT INTO albums VALUES($1,$2,$3,$4,$4) RETURNING id',
+      values: [id, name, year, createdAt],
     };
 
     const result = await this._pool.query(query);
@@ -41,7 +40,7 @@ class AlbumsService {
 
     const resultAlbum = await this._pool.query(album);
 
-    if (!resultAlbum.rows.length) {
+    if (!resultAlbum.rowCount) {
       throw new NotFoundError('Album tidak ditemukan');
     }
 

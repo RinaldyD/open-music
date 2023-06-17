@@ -38,8 +38,10 @@ class AlbumsHandler {
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
     const mapAlbum = await this._service.getAlbumById(id);
+    // const mapSong = await this._service.getSongsByAlbum(id);
 
     const album = mapDBToModelAlbum(mapAlbum.album, mapAlbum.songs);
+    // const album = mapDBToModelAlbum(mapAlbum, mapSong);
 
     return {
       status: 'success',

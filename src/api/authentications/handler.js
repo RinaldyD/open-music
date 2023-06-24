@@ -1,6 +1,6 @@
 const autoBind = require('auto-bind');
 
-class AuthencticationsHandler {
+class AuthenticationsHandler {
   constructor(authenticationsService, usersService, tokenManager, validator) {
     this._authenticationsService = authenticationsService;
     this._usersService = usersService;
@@ -12,6 +12,7 @@ class AuthencticationsHandler {
 
   async postAuthenticationHandler(request, h) {
     this._validator.validatePostAuthenticationPayload(request.payload);
+
     const { username, password } = request.payload;
     const id = await this._usersService.verifyUserCredential(
       username,
@@ -54,7 +55,9 @@ class AuthencticationsHandler {
 
   async deleteAuthenticationHandler(request) {
     this._validator.validateDeleteAuthenticationPayload(request.payload);
+
     const { refreshToken } = request.payload;
+
     await this._authenticationsService.verifyRefreshToken(refreshToken);
     await this._authenticationsService.deleteRefreshToken(refreshToken);
 
@@ -65,4 +68,4 @@ class AuthencticationsHandler {
   }
 }
 
-module.exports = AuthencticationsHandler;
+module.exports = AuthenticationsHandler;

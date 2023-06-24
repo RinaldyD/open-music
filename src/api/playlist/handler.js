@@ -1,6 +1,6 @@
 const autoBind = require('auto-bind');
 
-class PlaylistHandler {
+class playlistHandler {
   constructor(service, songService, validator) {
     this._service = service;
     this._songService = songService;
@@ -47,7 +47,6 @@ class PlaylistHandler {
 
     await this._service.verifyPlaylistsOwner(id, credentialId);
     await this._service.deletePlaylist(id);
-
     return {
       status: 'success',
       message: 'Playlist berhasil dihapus',
@@ -68,7 +67,7 @@ class PlaylistHandler {
 
     const response = h.response({
       status: 'success',
-      message: 'Song di playlists berhasil ditambahkan',
+      message: 'Lagu berhasil ditambahkan di Playlist',
     });
 
     response.code(201);
@@ -80,6 +79,7 @@ class PlaylistHandler {
     const { id: credentialId } = request.auth.credentials;
 
     await this._service.verifyPlaylistAccess(playlistId, credentialId);
+
     const playlist = await this._service.getPlaylistById(playlistId);
     const song = await this._service.getSongsFromPlaylist(playlistId);
     const playlistSongs = playlist.map((p) => ({
@@ -95,6 +95,7 @@ class PlaylistHandler {
         playlist: Object.assign({}, ...playlistSongs),
       },
     });
+
     return response;
   }
 
@@ -111,7 +112,7 @@ class PlaylistHandler {
 
     return {
       status: 'success',
-      message: 'Lagu playlist berhasil dihapus',
+      message: 'Lagu berhasil dihapus dari Playlist',
     };
   }
 
@@ -119,7 +120,6 @@ class PlaylistHandler {
     const { playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
 
-    console.log('cek var', playlistId, credentialId);
     await this._service.verifyPlaylistAccess(playlistId, credentialId);
 
     const getActivities = await this._service.getPlaylistSongActivities(
@@ -143,4 +143,4 @@ class PlaylistHandler {
   }
 }
 
-module.exports = PlaylistHandler;
+module.exports = playlistHandler;

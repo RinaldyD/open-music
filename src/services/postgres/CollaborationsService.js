@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exception/InvariantError');
@@ -19,7 +20,7 @@ class CollaborationsService {
     const result = await this._pool.query(query);
 
     if (!result.rows[0].id) {
-      throw new InvariantError('Lagu gagal ditambahkan');
+      throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
     return result.rows[0].id;
   }
@@ -32,8 +33,8 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new NotFoundError('Colaborator tidak ditemukan');
+    if (!result.rowCount) {
+      throw new NotFoundError('Kolaborator tidak dapat ditemukan');
     }
   }
 
@@ -45,7 +46,7 @@ class CollaborationsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new InvariantError('Kolaborasi gagal diverifikasi');
     }
   }

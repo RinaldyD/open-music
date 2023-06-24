@@ -12,7 +12,7 @@ const mapDBToModelSong = ({
   performer,
   genre,
   duration,
-  album_id,
+  albumId,
 }) => ({
   id,
   title,
@@ -20,7 +20,7 @@ const mapDBToModelSong = ({
   performer,
   genre,
   duration,
-  albumId: album_id,
+  albumId,
 });
 
 module.exports = {

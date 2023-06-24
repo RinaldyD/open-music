@@ -85,7 +85,7 @@ class SongsService {
 
   async getSongsByAlbum(id) {
     const song = {
-      text: 'SELECT songs.id, songs.title, songs.performer FROM albums JOIN songs ON albums.id = songs.album_id WHERE albums.id = $1',
+      text: 'SELECT songs.id, songs.title, songs.performer FROM albums JOIN songs ON albums.id = songs."albumId" WHERE albums.id = $1',
       values: [id],
     };
     const { resultSongs } = await this._pool.query(song);
@@ -112,7 +112,7 @@ class SongsService {
     const updatedAt = new Date().toISOString();
 
     const query = {
-      text: 'UPDATE songs SET title=$1, year=$2, genre=$3, performer=$4, duration=$5, album_id=$6, updated_at=$7 WHERE id = $8 RETURNING id',
+      text: 'UPDATE songs SET title=$1, year=$2, genre=$3, performer=$4, duration=$5, "albumId"=$6, updated_at=$7 WHERE id = $8 RETURNING id',
       values: [title, year, genre, performer, duration, albumId, updatedAt, id],
     };
 

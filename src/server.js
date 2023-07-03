@@ -1,4 +1,8 @@
+require('dotenv').config();
+
+const path = require('path');
 const Hapi = require('@hapi/hapi');
+const Inert = require('@hapi/inert');
 const Jwt = require('@hapi/jwt');
 
 const albums = require('./api/albums');
@@ -30,16 +34,30 @@ const _exports = require('./api/exports');
 const ProducerService = require('./services/rabbitmq/ProducerService');
 const ExportsValidator = require('./validator/exports');
 
+const likes = require('./api/likes');
+const AlbumLikesService = require('./services/postgres/AlbumLikesService');
+
+const StorageService = require('./services/storage/StorageService');
+
+const CacheService = require('./services/redis/CacheService');
+
 const ClientError = require('./exception/ClientError');
-require('dotenv').config();
 
 const init = async () => {
+  const cacheService = new CacheService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
+  const playlistsService = new PlaylistsService(
+    collaborationsService,
+    cacheService
+  );
+  const storageService = new StorageService(
+    path.resolve(__dirname, 'api/albums/file/covers')
+  );
+  const albumLikesService = new AlbumLikesService(albumsService, cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -54,6 +72,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -79,6 +100,7 @@ const init = async () => {
       options: {
         service: albumsService,
         validator: AlbumsValidator,
+        storageService,
       },
     },
     {
@@ -123,8 +145,14 @@ const init = async () => {
       plugin: _exports,
       options: {
         service: ProducerService,
-        validator: ExportsValidator,
         playlistsService,
+        validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: likes,
+      options: {
+        service: albumLikesService,
       },
     },
   ]);

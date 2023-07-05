@@ -24,7 +24,7 @@ class CacheService {
   async get(key) {
     const result = await this._client.get(key);
 
-    if (result === null) throw new Error('Cache tidak ditemukan. Lu punya cache lu punya kuasa');
+    if (result === null) throw new Error('Cache tidak ditemukan.');
 
     return result;
   }

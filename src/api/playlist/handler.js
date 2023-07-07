@@ -124,7 +124,7 @@ class playlistHandler {
 
     const getActivities = await this._service.getPlaylistSongActivities(
       playlistId,
-      credentialId
+      credentialId,
     );
 
     const response = h.response({

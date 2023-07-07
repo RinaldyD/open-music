@@ -18,7 +18,7 @@ class CollaborationsHandler {
     await this._collaborationsService.verifyUserId(userId);
     const collaborationId = await this._collaborationsService.addCollaborations(
       playlistId,
-      userId
+      userId,
     );
 
     const response = h.response({

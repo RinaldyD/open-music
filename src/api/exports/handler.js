@@ -1,20 +1,19 @@
 const autoBind = require('auto-bind');
 
 class ExportsHandler {
-  constructor(service, playlistsService, validator) {
+  constructor(service, validator, playlistsService) {
     this._service = service;
-    this._playlistsService = playlistsService;
     this._validator = validator;
+    this._playlistsService = playlistsService;
 
     autoBind(this);
   }
 
   async postExportsPlaylistsHandler(request, h) {
     await this._validator.validateExportPlaylistsPayload(request.payload);
-    const { playlistId } = request.params;
+    const playlistId = request.params.playlistid;
     const { id: credentialId } = request.auth.credentials;
 
-    await this._playlistsService.getPlaylistById(playlistId);
     await this._playlistsService.verifyPlaylistsOwner(playlistId, credentialId);
 
     const message = {
@@ -22,10 +21,7 @@ class ExportsHandler {
       targetEmail: request.payload.targetEmail,
     };
 
-    await this._service.sendMessage(
-      'export:playlists',
-      JSON.stringify(message)
-    );
+    await this._service.sendMessage('export:test', JSON.stringify(message));
 
     const response = h.response({
       status: 'success',

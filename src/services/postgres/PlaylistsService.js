@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exception/InvariantError');
@@ -31,20 +30,31 @@ class PlaylistService {
   }
 
   async getPlaylists(owner) {
-    const query = {
-      text: `SELECT playlists.id, playlists.name, users.username FROM playlists
-      LEFT JOIN users ON users.id = playlists.owner
-      LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
-      WHERE users.id = $1 OR collaborations.user_id = $1`,
-      values: [owner],
-    };
-    const result = await this._pool.query(query);
+    try {
+      const result = await this._cacheService.get(`playlists:${owner}`);
+      return {
+        playlists: JSON.parse(result),
+        cached: true,
+      };
+    } catch (error) {
+      const query = {
+        text: `SELECT playlists.id, playlists.name, users.username FROM playlists
+        LEFT JOIN users ON users.id = playlists.owner
+        LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+        WHERE users.id = $1 OR collaborations.user_id = $1`,
+        values: [owner],
+      };
+      const result = await this._pool.query(query);
 
-    await this._cacheService.set(
-      `playlists:${owner}`,
-      JSON.stringify(result.rows)
-    );
-    return result.rows;
+      await this._cacheService.set(
+        `playlists:${owner}`,
+        JSON.stringify(result.rows),
+      );
+      return {
+        playlists: result.rows,
+        cached: false,
+      };
+    }
   }
 
   async deletePlaylist(id) {
@@ -65,13 +75,13 @@ class PlaylistService {
 
   async verifyPlaylistsOwner(playlistId, owner) {
     const query = {
-      text: 'SELECT * FROM playlists WHERE id = $1',
+      text: 'SELECT owner FROM playlists WHERE id = $1',
       values: [playlistId],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Anda tidak memiliki playlist');
     }
 
@@ -161,7 +171,7 @@ class PlaylistService {
       try {
         await this._collaborationsService.verifyCollaborator(
           playlistId,
-          userId
+          userId,
         );
       } catch {
         throw error;

@@ -27,9 +27,7 @@ class SongsHandler {
   async getSongsHandler(request, h) {
     const params = request.query;
 
-    const fetchSong = await this._service.getSongs(params);
-
-    const songs = fetchSong.map((song) => mapDBToModelSong(song));
+    const songs = await this._service.getSongs(params);
 
     const response = h.response({
       status: 'success',
@@ -54,7 +52,9 @@ class SongsHandler {
 
   async putSongByIdHandler(request, h) {
     this._validator.validateSongPayload(request.payload);
-    const { title, year, genre, performer, duration, albumId } = request.payload;
+    const {
+      title, year, genre, performer, duration, albumId,
+    } = request.payload;
     const { id } = request.params;
     await this._service.editSongById(id, {
       title,

@@ -72,7 +72,7 @@ class AlbumsService {
 
     if (!result.rowCount) {
       throw new NotFoundError(
-        'Gagal memperbarui album. Id tidak dapat ditemukan'
+        'Gagal memperbarui album. Id tidak dapat ditemukan',
       );
     }
   }
@@ -99,7 +99,7 @@ class AlbumsService {
     const result = await this._pool.query(query);
     if (!result.rowCount) {
       throw new NotFoundError(
-        'Gagal memperbarui cover album. Id tidak dapat ditemukan'
+        'Gagal memperbarui cover album. Id tidak dapat ditemukan',
       );
     }
   }

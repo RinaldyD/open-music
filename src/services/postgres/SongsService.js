@@ -9,24 +9,15 @@ class SongsService {
     this._pool = new Pool();
   }
 
-  async addSong({ title, year, genre, performer, duration, albumId }) {
+  async addSong({
+    title, year, genre, performer, duration, albumId,
+  }) {
     const id = `song-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
-    const updateAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
-      values: [
-        id,
-        title,
-        year,
-        genre,
-        performer,
-        duration,
-        albumId,
-        createdAt,
-        updateAt,
-      ],
+      text: 'INSERT INTO songs VALUES($1,$2,$3,$4,$5,$6,$7,$8,$8) RETURNING id',
+      values: [id, title, year, genre, performer, duration, albumId, createdAt],
     };
 
     const result = await this._pool.query(query);
@@ -38,48 +29,12 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs(params) {
-    const { title, performer } = params;
-
-    if (title && performer) {
-      const query = {
-        text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2',
-        values: [`%${title}%`, `%${performer}%`],
-      };
-
-      const { rows } = await this._pool.query(query);
-
-      return rows;
-    }
-
-    if (title) {
-      const query = {
-        text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1',
-        values: [`%${title}%`],
-      };
-
-      const { rows } = await this._pool.query(query);
-
-      return rows;
-    }
-
-    if (performer) {
-      const query = {
-        text: 'SELECT id, title, performer FROM songs WHERE performer ILIKE $1',
-        values: [`%${performer}%`],
-      };
-
-      const { rows } = await this._pool.query(query);
-
-      return rows;
-    }
-
+  async getSongs({ title = '', performer = '' }) {
     const query = {
-      text: 'SELECT id, title, performer FROM songs',
+      text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2',
+      values: [`%${title}%`, `%${performer}%`],
     };
-
     const { rows } = await this._pool.query(query);
-
     return rows;
   }
 
@@ -108,7 +63,9 @@ class SongsService {
     return mapDBToModelSong(result.rows[0]);
   }
 
-  async editSongById(id, { title, year, genre, performer, duration, albumId }) {
+  async editSongById(id, {
+    title, year, genre, performer, duration, albumId,
+  }) {
     const updatedAt = new Date().toISOString();
 
     const query = {
@@ -120,7 +77,7 @@ class SongsService {
 
     if (!result.rowCount) {
       throw new NotFoundError(
-        'Gagal memperbarui song. Id tidak dapat ditemukan'
+        'Gagal memperbarui song. Id tidak dapat ditemukan',
       );
     }
   }

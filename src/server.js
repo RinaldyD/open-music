@@ -52,10 +52,10 @@ const init = async () => {
   const collaborationsService = new CollaborationsService();
   const playlistsService = new PlaylistsService(
     collaborationsService,
-    cacheService
+    cacheService,
   );
   const storageService = new StorageService(
-    path.resolve(__dirname, 'api/albums/file/covers')
+    path.resolve(__dirname, 'api/albums/file/covers'),
   );
   const albumLikesService = new AlbumLikesService(albumsService, cacheService);
 
@@ -145,8 +145,8 @@ const init = async () => {
       plugin: _exports,
       options: {
         service: ProducerService,
-        playlistsService,
         validator: ExportsValidator,
+        playlistsService,
       },
     },
     {

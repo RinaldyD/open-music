@@ -50,7 +50,7 @@ class AlbumLikesService {
 
       await this._cacheService.set(
         `likes:${albumId}`,
-        JSON.stringify(result.rowCount)
+        JSON.stringify(result.rowCount),
       );
 
       return {
@@ -86,7 +86,7 @@ class AlbumLikesService {
 
     if (result.rowCount > 0) {
       throw new ClientError(
-        'Anda sudah pernah menyukai album ini, menyukai si dia yang belum mwhehe'
+        'Anda sudah pernah menyukai album ini, menyukai si dia yang belum mwhehe',
       );
     }
   }

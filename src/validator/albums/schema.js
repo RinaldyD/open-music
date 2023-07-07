@@ -1,8 +1,11 @@
 const Joi = require('joi');
 
+const currentYear = new Date().getFullYear();
+
 const AlbumPayloadSchema = Joi.object({
   name: Joi.string().required(),
-  year: Joi.number().required(),
+  year: Joi.number().integer().min(1900).max(currentYear)
+    .required(),
 });
 
 const CoverPayloadSchema = Joi.object({
@@ -14,7 +17,7 @@ const CoverPayloadSchema = Joi.object({
       'image/jpeg',
       'image/jpg',
       'image/png',
-      'image/webp'
+      'image/webp',
     )
     .required(),
 }).unknown();
